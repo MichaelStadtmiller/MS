@@ -1,0 +1,48 @@
+[
+    {
+        "model"."partysource.Bottle",
+        "pk": 1,
+        "fields": {
+            "classi": "VODKA",
+            "name": "BURNETT'S BLUEBERRY VODKA",
+            "QOH": "13",
+            "size": "750 ML",
+            "price": "$6.99"
+        }
+    },
+    {
+        "model"."partysource.Bottle",
+        "pk": 2,
+        "fields": {
+            "classi": "RUM",
+            "name": "CRUZAN BLUEBERRY LEMONADE RUM",
+            "QOH": "2",
+            "size": "750 ML",
+            "price": "$9.99"
+        }
+    },
+    {
+        "model"."partysource.Bottle",
+        "pk": 3,
+        "fields": {
+            "classi": "BOURBON",
+            "name": "BUFFALO TRACE BOURBON",
+            "QOH": "237",
+            "size": "1.0 L",
+            "price": "$29.99"
+        }
+    },
+    {
+        "model"."partysource.Bottle",
+        "pk": 4,
+        "fields": {
+            "classi": "BOURBON",
+            "name": "BUFFALO TRACE BOURBON",
+            "QOH": "160",
+            "size": "50 ML",
+            "price": "$3.79"
+        }
+    }
+]
+
+
