@@ -1,0 +1,10 @@
+[
+    {
+        "model":"partysource.Bottle",
+        "pk": 1,
+        "fields": {
+            "PSID": 9924,
+            "name": "BUFFALO TRACE"
+        }
+    }
+]
