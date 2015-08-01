@@ -78,16 +78,12 @@ WSGI_APPLICATION = 'MSproj.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    },
-    'dbparty': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'dbparty',
+        'NAME': 'dbMS',
         'USER': 'dbams',
         'PASSWORD':'pineappledb',
         'HOST': 'localhost',
-        'PORT': '',
+        'PORT': '5432',
     }
 }
 
