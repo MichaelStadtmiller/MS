@@ -1,4 +1,17 @@
 {% extends "base.html" %}
 {% block header %}<h1>Party Source</h1>{% endblock %}
 {% block title %}Party title {% endblock %}
-{% block primary %} Party primary {% endblock %}
+{% block primary %}
+<h3> Party primary</h3>
+<br/>
+{% if all_bottles %}
+    <ul>
+    {% for bottle in all_bottles %}
+        <li><a href="/bottles/{{ bottle.PSID }}/">{{ bottle.name }}</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No bottles yo</p>
+{% endif %}
+{% endblock %}
