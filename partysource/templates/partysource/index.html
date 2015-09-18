@@ -2,12 +2,11 @@
 {% block header %}<h1>Party Source</h1>{% endblock %}
 {% block title %}Party title {% endblock %}
 {% block primary %}
-<h3> Party primary</h3>
-<br/>
+<h3> Table of bottles</h3>
 {% if all_bottles %}
     <ul>
     {% for bottle in all_bottles %}
-        <li><a href="/bottles/{{ bottle.PSID }}/">{{ bottle.name }}</a>
+        <li><a href="/partysource/{{ bottle.PSID }}/details">{{ bottle.name }}</a>
         </li>
     {% endfor %}
     </ul>
