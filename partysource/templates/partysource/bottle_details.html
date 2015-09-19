@@ -7,7 +7,26 @@
         <img src="https://www.thepartysource.com/express/images/inventory/BOURBON-BULLEIT.jpg" /><br/>
         <b>Name:</b> {{ item.name }}<br/>
         <b>Description:</b> {{ item.desc }} <br/>
+        <b>Category:</b> {{item.cat}} <br/>
+        <b>Classification:</b> {{item.}} <br/>
+        <b>Product Type:</b> {{item.prodtype}} <br/>
+        <b>Style 1:</b> {{item.style1}} <br/>
+        <b>Style 2:</b> {{item.style2}} <br/>
+        <b>Age:</b> {{item.age}} <br/>
+        <b>Brand:</b> {{item.brand}} <br/>
+        <b>Origin:</b> {{item.origin}} <br/>
+        <b>Region:</b> {{item.region}} <br/>
+        <br/>        
         <b>ABV:</b> {{item.ABV}} <br/>
+        <b>Package:</b> {{item.package}} <br/>
+        <b>Container:</b> {{item.container}} <br/>
+        <b>UOM:</b> {{item.UOM}} <br/>
+        <b>Size:</b> {{item.size}} <br/>
+        <br/>
+        <b>QOH:</b> {{item.QOH}} <br/>
+        <b>Price:</b> {{item.price}} <br/>
+        <b>Retail:</b> {{item.retail}} <br/>
     {% endfor %}
+    {{ calcs }}
 {% endblock %}
 
