@@ -18,17 +18,18 @@ class BottleDetailsView(TemplateView):
         context = super(BottleDetailsView, self).get_context_data(**kwargs)
         PSID = kwargs.get('PSID')
         context['bottle_details'] = self.get_bottle_details_context(PSID)
-        context['calcs'] = self.get_bottle_calculations(PSID)
         return context
 
     def get_bottle_details_context(self, PSID):
         context = {}
-        context['items'] = Bottle.objects.filter(PSID=PSID)
-        return context
-    
-    def get_bottle_calculations(self, PSID):
-        context = {}
-        UOM = Bottle.objects.filter(PSID=PSID).values('UOM')
-        price = Bottle.objects.filter(PSID=PSID).values('price')
-        size = Bottle.objects.filter(PSID=PSID).values('size')
+        thisBottle = Bottle.objects.filter(PSID=PSID)
+        context['items'] = thisBottle
+        
+        for b in thisBottle:
+            UOM = b.UOM
+            price = b.price
+            size = b.size
+            imgsrc = 'https://www.thepartysource.com/express/' + b.img
+        context['PPU'] = round(price/size,5)
+        context['imgsrc'] = imgsrc
         return context

@@ -2,9 +2,8 @@
 {% block header %}<h1>Party Source</h1>{% endblock %}
 {% block title %}<h2>Details</h2>{% endblock %}
 {% block primary %}
+        <img src="{{ bottle_details.imgsrc }}"/><br/>
     {% for item in bottle_details.items %}
-        <!--img src="https://www.thepartysource.com/express/{{ item.img }}"/-->
-        <img src="https://www.thepartysource.com/express/images/inventory/BOURBON-BULLEIT.jpg" /><br/>
         <b>Name:</b> {{ item.name }}<br/>
         <b>Description:</b> {{ item.desc }} <br/>
         <b>Category:</b> {{item.cat}} <br/>
@@ -27,6 +26,6 @@
         <b>Price:</b> {{item.price}} <br/>
         <b>Retail:</b> {{item.retail}} <br/>
     {% endfor %}
-    {{ calcs }}
+    <b>Price per ML:</b> {{ bottle_details.PPU }}
 {% endblock %}
 
