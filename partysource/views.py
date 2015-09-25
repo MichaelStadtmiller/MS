@@ -11,6 +11,18 @@ def index(request):
     context = RequestContext(request, {'all_bottles': all_bottles,})
     return HttpResponse(template.render(context))
 
+class Bottles(TemplateView):
+    template_name = 'partysource/index2.html'
+
+    def get_context_data(self, **kwargs):
+        context = {}
+        return context
+
+    def get_bottles_context(self):
+        context = {}
+        return context
+
+
 class BottleDetailsView(TemplateView):
     template_name = 'partysource/bottle_details.html'
     
