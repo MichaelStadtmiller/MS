@@ -17,15 +17,16 @@ import psycopg2
 import psycopg2.extras
 
 def main():
-    search = raw_input('Enter a search term: ')
-#    search = 'Four Roses'
+#    search = raw_input('Enter a search term: ')
+    search = 'Corner Creek'
+    print "-------------" + search
     URL = 'https://www.thepartysource.com/express/results.php?o=0&t=&s='+search.replace(' ','+')#+'&sort=invQOH'
     getProducts(URL)
 
 def getPriceQOH(myURL):
     mylist = []
     html = requests.get(myURL)
-    soup = BeautifulSoup(html.text)
+    soup = BeautifulSoup(html.text, "html.parser")
     
     #get Price/QOH
     table = soup.find('table', attrs={'class':'itemHotspot'})
@@ -34,13 +35,13 @@ def getPriceQOH(myURL):
         cols = row.find_all('td')
         if row.strong.string == 'Price:':
             try:
-                price = row.strong.find_next_sibling("font").string.strip()
-                retail = row.strong.nextSibling.next_element.next_element.next_element.string.strip()
+                price = float(str(row.strong.find_next_sibling("font").string.strip())[1:])
+                retail = float(str(row.strong.nextSibling.next_element.next_element.next_element.string.strip())[5:])
             except:
-                price = cols[0].next_element.next_element.next_element.strip()
+                price = float(str(cols[0].next_element.next_element.next_element.strip())[1:])
                 retail = price
         if row.strong.string == 'Qty Available':#current QOH
-            QOH = cols[1].string.strip()
+            QOH = int(cols[1].string.strip())
 
     #pass values to list
     mylist.extend([price,retail,QOH])
@@ -49,44 +50,44 @@ def getPriceQOH(myURL):
 def getProductDetail(myURL):
     mylist = []
     html = requests.get(myURL)
-    soup = BeautifulSoup(html.text)
+    soup = BeautifulSoup(html.text, "html.parser")
     table = soup.find('table', attrs={'class':'itemDisplay'})
     rows = table.find_all('tr')
 
-    name = rows[0].find('strong').string
+    name = str(rows[0].find('strong').string.strip())
     #Image and Description
     cols = rows[7].find_all('td')
-    img=cols[0].find('img')['src']
-    desc=cols[1].string
+    img=str(cols[0].find('img')['src'].strip())
+    desc=str(cols[1].string.strip())
 
-    category = rows[8].find_all('a')[0].string
-    origin = rows[8].find_all('a')[1].string
-    classi = rows[9].find_all('a')[0].string
-    region = rows[9].find_all('a')[1].string
-    prodtype = rows[10].find_all('a')[0].string
-    ABV = rows[10].find_all('a')[1].string
-    style1 = rows[11].find_all('a')[0].string
-    package = rows[11].find_all('a')[1].string
-    style2 = rows[12].find_all('a')[0].string
-    volume = rows[12].find_all('a')[1].string
-    age = rows[13].find_all('a')[0].string
-    container = rows[13].find_all('a')[1].string
-    brand = rows[14].find_all('a')[0].string 
+    category = str(rows[8].find_all('a')[0].string)
+    origin = str(rows[8].find_all('a')[1].string)
+    classi = str(rows[9].find_all('a')[0].string)
+    region = str(rows[9].find_all('a')[1].string)
+    prodtype = str(rows[10].find_all('a')[0].string)
+    ABV = float(rows[10].find_all('a')[1].string)
+    style1 = str(rows[11].find_all('a')[0].string)
+    package = str(rows[11].find_all('a')[1].string)
+    style2 = str(rows[12].find_all('a')[0].string)
+    volume = str(rows[12].find_all('a')[1].string)
+    age = str(rows[13].find_all('a')[0].string)
+    container = str(rows[13].find_all('a')[1].string)
+    brand = str(rows[14].find_all('a')[0].string )
  
     #split volume to get size and UOM 
     a = volume.split(' ')
-    size = a[0]
-    UOM = a[1]
+    size = float(a[0])
+    UOM = str(a[1])
 
     #pass values to list
-    mylist.extend([name.strip(),img.strip(),desc.strip(),category,origin,
+    mylist.extend([name,img,desc,category,origin,
         classi,region,prodtype,ABV,style1,package,style2,size,UOM,age,container,brand])
     return mylist
 
 def getProducts(myURL):
     bottle = []
     html = requests.get(myURL)
-    soup = BeautifulSoup(html.text)
+    soup = BeautifulSoup(html.text, "html.parser")
     table = soup.find('table', attrs={'class':'searchResults'})
     rows = table.find_all('tr', class_=lambda x : x !='legend')
     for row in rows:
@@ -95,11 +96,13 @@ def getProducts(myURL):
             ext = cols[1].find('a').get('href')
             j = len(ext)-(ext.index("="))-1
             #populate list
-            bottle.extend([ext[-j:]])
+#            i = str([ext[-j:]][0])
+            bottle.extend([int(str([ext[-j:]][0]))])
             bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
             bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
 
             #write to DB
+            print bottle[1]
             writeDB(bottle)
 #            print bottle #debug
 
@@ -118,22 +121,20 @@ def getProducts(myURL):
             break
 
 def writeDB(mylist):
-#    print mylist
     try:
-        conn=psycopg2.connect("dbname='dbMS' user='dbams' password='pineappledb'")
-        print "here!"
+        conn=psycopg2.connect("dbname='dbMS' user='dbams' host='localhost' password='pineappledb'")
     except:
-        print "we're experiencing technical difficulties"
-    
+        print "SQL DB connection failed"
     cur = conn.cursor()
+
     try:
-        cur.execute("""SELECT desc FROM bottle""")
+        cur.execute("""INSERT into partysource_bottle ("PSID", name, img, "desc", cat, origin, \
+            classi, region, prodtype, "ABV", style1, "package", style2, size, "UOM", age, \
+            container, brand, price, retail, "QOH") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, \
+            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",mylist)
     except:
-        print "I just can't do it captain"
-    
-    rows = cur.fetchall()
-    for r in rows:
-        print "  ", r[0]
+        print "SQL INSERT error"
+    conn.commit()
 
 if __name__ == '__main__':
     main()
