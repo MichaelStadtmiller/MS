@@ -11,17 +11,18 @@ def index(request):
     context = RequestContext(request, {'all_bottles': all_bottles,})
     return HttpResponse(template.render(context))
 
-class Bottles(TemplateView):
-    template_name = 'partysource/index2.html'
-
-    def get_context_data(self, **kwargs):
-        context = {}
-        return context
-
-    def get_bottles_context(self):
-        context = {}
-        return context
-
+### CLASS NOT USED ###
+#class Bottles(TemplateView):
+#    template_name = 'partysource/index2.html'
+#
+#    def get_context_data(self, **kwargs):
+#        context = {}
+#        return context
+#
+#    def get_bottles_context(self):
+#        context = {}
+#        return context
+######
 
 class BottleDetailsView(TemplateView):
     template_name = 'partysource/bottle_details.html'
@@ -42,6 +43,14 @@ class BottleDetailsView(TemplateView):
             price = b.price
             size = b.size
             imgsrc = 'https://www.thepartysource.com/express/' + b.img
-        context['PPU'] = round(price/size,5)
+
+        conv_size = size
+        if UOM == 'L':
+            conv_size = conv_size*1000
+        context['PPU'] = round(price*(750/conv_size),5)
         context['imgsrc'] = imgsrc
+
+        #to add the calcuated values, do I add them to the context['items'] = thisBottle
+        # e.g. context['items'] = thisBottle + context['PPU'] + context['imgsrc']
         return context
+
