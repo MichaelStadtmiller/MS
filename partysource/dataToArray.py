@@ -22,10 +22,18 @@ def main():
 
 def getPriceQOH(myURL):
     mylist = []
-    html = requests.get(myURL)
-    soup = BeautifulSoup(html.text)
+
+    headers = {'Accept':'text/css,*/*;q=0.1',
+        'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+        'Accept-Encoding':'gzip,deflate,sdch',
+        'Accept-Language':'en-US,en;q=0.8',
+        'User-Agent':'Mozilla/5 (Solaris 10) Gecko'}
+
+    html_content = requests.get(myURL, headers = headers)
+#    html_content = html.content
+    soup = BeautifulSoup(html_content.text)
     
-    #get Price/QOH
+    # get Price/QOH
     table = soup.find('table', attrs={'class':'itemHotspot'})
     rows = table.find_all('tr')
     for row in rows:
@@ -37,22 +45,30 @@ def getPriceQOH(myURL):
             except:
                 price = cols[0].next_element.next_element.next_element.strip()
                 retail = price
-        if row.strong.string == 'Qty Available':#current QOH
+        if row.strong.string == 'Qty Available': # current QOH
             QOH = cols[1].string.strip()
 
-    #pass values to list
-    mylist.extend([price,retail,QOH])
+    # pass values to list
+    mylist.extend([price, retail, QOH])
     return mylist
 
 def getProductDetail(myURL):
     mylist = []
-    html = requests.get(myURL)
-    soup = BeautifulSoup(html.text)
+
+    headers = {'Accept':'text/css,*/*;q=0.1',
+        'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+        'Accept-Encoding':'gzip,deflate,sdch',
+        'Accept-Language':'en-US,en;q=0.8',
+        'User-Agent':'Mozilla/5 (Solaris 10) Gecko'}
+
+    html_content = requests.get(myURL, headers=headers)
+#    html_content = html.content
+    soup = BeautifulSoup(html_content.text)
     table = soup.find('table', attrs={'class':'itemDisplay'})
     rows = table.find_all('tr')
 
     name = rows[0].find('strong').string
-    #Image and Description
+    # Image and Description
     cols = rows[7].find_all('td')
     img=cols[0].find('img')['src']
     desc=cols[1].string
@@ -71,39 +87,47 @@ def getProductDetail(myURL):
     container = rows[13].find_all('a')[1].string
     brand = rows[14].find_all('a')[0].string 
  
-    #split volume to get size and UOM 
+    # split volume to get size and UOM
     a = volume.split(' ')
     size = a[0]
     UOM = a[1]
 
-    #pass values to list
+    # pass values to list
     mylist.extend([name.strip(),img.strip(),desc.strip(),category,origin,
         classi,region,prodtype,ABV,style1,package,style2,size,UOM,age,container,brand])
     return mylist
 
 def getProducts(myURL):
     bottle = []
-    html = requests.get(myURL)
-    soup = BeautifulSoup(html.text)
+
+    headers = {'Accept':'text/css,*/*;q=0.1',
+        'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+        'Accept-Encoding':'gzip,deflate,sdch',
+        'Accept-Language':'en-US,en;q=0.8',
+        'User-Agent':'Mozilla/5 (Solaris 10) Gecko'}
+
+    html_content = requests.get(myURL, headers = headers)
+#    html_content = html.content
+    soup = BeautifulSoup(html_content.text)
     table = soup.find('table', attrs={'class':'searchResults'})
     rows = table.find_all('tr', class_=lambda x : x !='legend')
     for row in rows:
-        cols = row.find_all('td') #whole colum
+        cols = row.find_all('td') # whole colum
         if cols[5].string.strip() in ['low-stock','in-stock']:
             ext = cols[1].find('a').get('href')
             j = len(ext)-(ext.index("="))-1
-            #populate list
+            # populate list
             bottle.extend([ext[-j:]])
             bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
             bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
 
-            #write to DB
+            # write to DB
             writeDB(bottle)
-#            print bottle #debug
+#            print bottle # debug
 
-            bottle = [] #clear list
+            bottle = []  # clear list
 
-	## More product - next page is coming back sorted and is duplicating
+    # More product - next page is coming back sorted and is duplicating
     #  from the first page and/or missing product completely
     rs = table.find_all('tr', class_=lambda x : x=='legend')
     for r in reversed(rs):
@@ -114,6 +138,7 @@ def getProducts(myURL):
             break
         except:
             break
+
 
 def writeDB(mylist):
     print mylist

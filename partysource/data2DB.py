@@ -1,3 +1,6 @@
+## HOW TO RUN ##
+    # My house has been blocked from the site. Use a VPN connection before executing
+
 ## Beautiful Soup
     # http://www.crummy.com/software/BeautifulSoup/bs4/doc/#a-string
     # http://stackoverflow.com/questions/23377533/python-beautifulsoup-parsing-table
@@ -18,8 +21,8 @@ import psycopg2.extras
 
 
 def main():
-    # search = raw_input('Enter a search term: ')
-    search = 'Corner Creek'
+    search = raw_input('Enter a search term: ')
+    # search = 'Corner Creek'
     print "-------------" + search
     URL = 'https://www.thepartysource.com/express/results.php?o=0&t=&s='+search.replace(' ','+')# +'&sort=invQOH'
     getProducts(URL)
@@ -27,7 +30,12 @@ def main():
 
 def getPriceQOH(myURL):
     mylist = []
-    html = requests.get(myURL)
+    headers = {'Accept':'text/css,*/*;q=0.1',
+        'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+        'Accept-Encoding':'gzip,deflate,sdch',
+        'Accept-Language':'en-US,en;q=0.8',
+        'User-Agent':'Mozilla/5 (Solaris 10) Gecko'}
+    html = requests.get(myURL, headers=headers)
     soup = BeautifulSoup(html.text, "html.parser")
     
     # get Price/QOH
@@ -52,7 +60,12 @@ def getPriceQOH(myURL):
 
 def getProductDetail(myURL):
     mylist = []
-    html = requests.get(myURL)
+    headers = {'Accept':'text/css,*/*;q=0.1',
+        'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+        'Accept-Encoding':'gzip,deflate,sdch',
+        'Accept-Language':'en-US,en;q=0.8',
+        'User-Agent':'Mozilla/5 (Solaris 10) Gecko'}
+    html = requests.get(myURL, headers=headers)
     soup = BeautifulSoup(html.text, "html.parser")
     table = soup.find('table', attrs={'class':'itemDisplay'})
     rows = table.find_all('tr')
@@ -61,7 +74,7 @@ def getProductDetail(myURL):
     # Image and Description
     cols = rows[7].find_all('td')
     img=str(cols[0].find('img')['src'].strip())
-    desc=str(cols[1].string.strip())
+    desc=str(cols[1].string.encode('utf-8').strip())
 
     category = str(rows[8].find_all('a')[0].string)
     origin = str(rows[8].find_all('a')[1].string)
@@ -83,14 +96,19 @@ def getProductDetail(myURL):
     UOM = str(a[1])
 
     # pass values to list
-    mylist.extend([name,img,desc,category,origin,
-        classi,region,prodtype,ABV,style1,package,style2,size,UOM,age,container,brand])
+    mylist.extend([name, img, desc, category, origin,
+        classi, region, prodtype, ABV,  style1, package, style2, size, UOM, age, container, brand])
     return mylist
 
 
 def getProducts(myURL):
     bottle = []
-    html = requests.get(myURL)
+    headers = {'Accept':'text/css,*/*;q=0.1',
+        'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+        'Accept-Encoding':'gzip,deflate,sdch',
+        'Accept-Language':'en-US,en;q=0.8',
+        'User-Agent':'Mozilla/5 (Solaris 10) Gecko'}
+    html = requests.get(myURL, headers=headers)
     soup = BeautifulSoup(html.text, "html.parser")
     table = soup.find('table', attrs={'class':'searchResults'})
     rows = table.find_all('tr', class_=lambda x : x !='legend')
