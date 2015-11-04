@@ -4,13 +4,33 @@
 {% block primary %}
 <h3> Table of bottles</h3>
 {% if all_bottles %}
-    <ul>
+<table class="pure-table pure-table-horizontal">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Product</th>
+            <th>Style</th>
+            <th>Brand</th>
+            <th>Package</th>
+            <th>On-Hand</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
     {% for bottle in all_bottles %}
-        <li><a href="/partysource/{{ bottle.PSID }}/details">{{ bottle.name }}</a>
-        </li>
+        <tr>
+            <td><a href="/partysource/{{ bottle.PSID }}/details">{{ bottle.name }}</a></td>
+            <td>{{ bottle.prodtype }}</td>
+            <td>{{ bottle.style1 }}</td>
+            <td>{{ bottle.brand }}</td>
+            <td>{{ bottle.package }}</td>
+            <td>{{ bottle.QOH }}</td>
+            <td>{{ bottle.price }}</td>
+        </tr>
     {% endfor %}
-    </ul>
+    </tbody>
+</table>
 {% else %}
-    <p>No bottles yo</p>
+    <p> No bottles; update the DB </p>
 {% endif %}
 {% endblock %}

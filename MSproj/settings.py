@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'dbMS',
         'USER': 'dbams',
-        'PASSWORD':'pineappledb',
+        'PASSWORD': 'pineappledb',
         'HOST': 'localhost',
         'PORT': '5432',
     }
