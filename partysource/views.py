@@ -37,7 +37,7 @@ class BottleDetailsView(TemplateView):
         context['PPU'] = round(price*(750/conv_size),5)
         context['imgsrc'] = imgsrc
 
-        #to add the calcuated values, do I add them to the context['items'] = thisBottle
+        # to add the calculated values, do I add them to the context['items'] = thisBottle
         # e.g. context['items'] = thisBottle + context['PPU'] + context['imgsrc']
         return context
 
