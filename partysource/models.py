@@ -1,6 +1,6 @@
 from django.db import models
 
-# Create your models here.
+
 class Bottle(models.Model):
     PSID = models.IntegerField(null=True)
     name = models.CharField(max_length=100,default='')

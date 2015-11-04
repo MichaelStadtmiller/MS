@@ -1,9 +1,8 @@
-# from django.shortcuts import render
-# i think i can remove these - this was back when I could connect urls to views
 from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.views.generic import TemplateView, View
 from .models import Bottle
+
 
 def index(request):
     all_bottles = Bottle.objects.order_by('name')
@@ -11,18 +10,6 @@ def index(request):
     context = RequestContext(request, {'all_bottles': all_bottles,})
     return HttpResponse(template.render(context))
 
-### CLASS NOT USED ###
-#class Bottles(TemplateView):
-#    template_name = 'partysource/index2.html'
-#
-#    def get_context_data(self, **kwargs):
-#        context = {}
-#        return context
-#
-#    def get_bottles_context(self):
-#        context = {}
-#        return context
-######
 
 class BottleDetailsView(TemplateView):
     template_name = 'partysource/bottle_details.html'
@@ -35,10 +22,10 @@ class BottleDetailsView(TemplateView):
 
     def get_bottle_details_context(self, PSID):
         context = {}
-        thisBottle = Bottle.objects.filter(PSID=PSID)
-        context['items'] = thisBottle
+        thisbottle = Bottle.objects.filter(PSID=PSID)
+        context['items'] = thisbottle
         
-        for b in thisBottle:
+        for b in thisbottle:
             UOM = b.UOM
             price = b.price
             size = b.size
