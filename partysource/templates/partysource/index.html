@@ -4,7 +4,7 @@
 {% block primary %}
 <h3> Table of bottles</h3>
 {% if all_bottles %}
-<table class="pure-table pure-table-horizontal">
+<table id="myTable">
     <thead>
         <tr>
             <th>Name</th>
@@ -30,6 +30,7 @@
     {% endfor %}
     </tbody>
 </table>
+
 {% else %}
     <p> No bottles; update the DB </p>
 {% endif %}
