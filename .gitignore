@@ -1,5 +1,14 @@
+<<<<<<< HEAD
 # Byte compiled / optimized / DLL files
+=======
+#byte-compiled / optimized / DLL files
+__pycache__/
+>>>>>>> displaydata
 *.py[cod]
 
 #pycharm
 .idea/
+<<<<<<< HEAD
+=======
+
+>>>>>>> displaydata

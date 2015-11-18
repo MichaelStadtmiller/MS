@@ -30,7 +30,6 @@ def getPriceQOH(myURL):
         'User-Agent':'Mozilla/5 (Solaris 10) Gecko'}
 
     html_content = requests.get(myURL, headers = headers)
-#    html_content = html.content
     soup = BeautifulSoup(html_content.text)
     
     # get Price/QOH
@@ -62,7 +61,6 @@ def getProductDetail(myURL):
         'User-Agent':'Mozilla/5 (Solaris 10) Gecko'}
 
     html_content = requests.get(myURL, headers=headers)
-#    html_content = html.content
     soup = BeautifulSoup(html_content.text)
     table = soup.find('table', attrs={'class':'itemDisplay'})
     rows = table.find_all('tr')
@@ -107,7 +105,6 @@ def getProducts(myURL):
         'User-Agent':'Mozilla/5 (Solaris 10) Gecko'}
 
     html_content = requests.get(myURL, headers = headers)
-#    html_content = html.content
     soup = BeautifulSoup(html_content.text)
     table = soup.find('table', attrs={'class':'searchResults'})
     rows = table.find_all('tr', class_=lambda x : x !='legend')
