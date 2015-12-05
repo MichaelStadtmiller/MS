@@ -17,7 +17,7 @@
         </tr>
     </thead>
     <tbody>
-    {% for bottle in all_bottles %}
+        {% for bottle in all_bottles %}
         <tr>
             <td><a href="/partysource/{{ bottle.PSID }}/details">{{ bottle.name }}</a></td>
             <td>{{ bottle.prodtype }}</td>
@@ -27,7 +27,7 @@
             <td>{{ bottle.QOH }}</td>
             <td>{{ bottle.price }}</td>
         </tr>
-    {% endfor %}
+        {% endfor %}
     </tbody>
 </table>
 

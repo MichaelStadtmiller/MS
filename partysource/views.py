@@ -7,7 +7,7 @@ from .models import Bottle
 def index(request):
     all_bottles = Bottle.objects.order_by('name')
     template = loader.get_template('partysource/index.html')
-    context = RequestContext(request, {'all_bottles': all_bottles,})
+    context = RequestContext(request, {'all_bottles': all_bottles,},)
     return HttpResponse(template.render(context))
 
 
