@@ -3,7 +3,7 @@
 {% block title %}Party title {% endblock %}
 {% block primary %}
 <h3> Table of bottles</h3>
-{% if all_bottles %}
+{% if my_bottles.items %}
 <table id="myTable">
     <thead>
         <tr>
@@ -21,7 +21,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for bottle in all_bottles %}
+        {% for bottle in my_bottles.items %}
         <tr>
             <td><a href="/partysource/{{ bottle.PSID }}/details">{{ bottle.name }}</a></td>
             <td>{{ bottle.prodtype }}</td>
@@ -38,8 +38,7 @@
         {% endfor %}
     </tbody>
 </table>
-
 {% else %}
-    <p> No bottles; update the DB </p>
+    <p> No bottles here!; update the DB </p>
 {% endif %}
 {% endblock %}

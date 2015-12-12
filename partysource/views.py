@@ -4,16 +4,23 @@ from django.views.generic import TemplateView
 from .models import Bottle
 
 
-def index(request):
-    all_bottles = Bottle.objects.order_by('name')
-    template = loader.get_template('partysource/index.html')
-    context = RequestContext(request, {'all_bottles': all_bottles,},)
-    return HttpResponse(template.render(context))
+class BottlesClass(TemplateView):
+    template_name = 'partysource/index.html'
+
+    def get_context_data(self):
+        context = super(BottlesClass, self).get_context_data()
+        context['my_bottles'] = self.get_bottles()
+        return context
+
+    def get_bottles(self):
+        context = {}
+        all_bottles = Bottle.objects.order_by('name')
+        context['items'] = all_bottles
+        return context
 
 
 class BottleDetailsView(TemplateView):
     template_name = 'partysource/bottle_details.html'
-
     
     def get_context_data(self, **kwargs):
         context = super(BottleDetailsView, self).get_context_data(**kwargs)
