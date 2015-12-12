@@ -113,7 +113,7 @@ def getProducts(myURL):
     table = soup.find('table', attrs={'class':'searchResults'})
     rows = table.find_all('tr', class_=lambda x : x !='legend')
     for row in rows:
-        cols = row.find_all('td') #whole colum
+        cols = row.find_all('td')  #whole colum
         if cols[5].string.strip() in ['low-stock','in-stock']:
             ext = cols[1].find('a').get('href')
             j = len(ext)-(ext.index("="))-1
@@ -123,12 +123,28 @@ def getProducts(myURL):
             bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
             bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
 
-            # write to DB
-            print bottle[1]
-            writeDB(bottle)
-#            print bottle #debug
+            #get price per fifth
+            conv_size = bottle[13]
+            if bottle[14] == 'L':
+                conv_size = conv_size*1000
+            PPU = round(bottle[18]*(750.0/conv_size), 2)
 
-            bottle = [] # clear list
+            #get discount price and total investment required.
+            if bottle[20] > 12:
+                q = 12
+            else:
+                q = bottle[20]
+            invstmt = round(q*bottle[18]*0.9,2)
+            dPrice = round(invstmt/q,2)
+            dPPU = round(PPU*0.9,2)
+
+            bottle.extend([str(PPU), str(invstmt), str(dPrice), str(dPPU)])
+
+            # write to DB
+            writeDB(bottle)
+            print bottle[1] #debug
+
+            bottle = []  # clear list
 
     # More product - next page is coming back sorted and is duplicating
     #  from the first page and/or missing product completely
@@ -152,10 +168,10 @@ def writeDB(mylist):
     try:
         cur.execute("""INSERT into partysource_bottle ("PSID", name, img, "desc", cat, origin, \
             classi, region, prodtype, "ABV", style1, "package", style2, size, "UOM", age, \
-            container, brand, price, retail, "QOH") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, \
-            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",mylist)
-    except:
-        print "SQL INSERT error"
+            container, brand, price, retail, "QOH", "PPU", invstmt, "dPrice", "dPPU") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, \
+            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", mylist)
+    except ValueError:
+        print "SQL INSERT error" + ValueError
     conn.commit()
 
 if __name__ == '__main__':

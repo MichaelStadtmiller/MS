@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.template import RequestContext, loader
-from django.views.generic import TemplateView, View
+from django.views.generic import TemplateView
 from .models import Bottle
 
 
@@ -13,6 +13,7 @@ def index(request):
 
 class BottleDetailsView(TemplateView):
     template_name = 'partysource/bottle_details.html'
+
     
     def get_context_data(self, **kwargs):
         context = super(BottleDetailsView, self).get_context_data(**kwargs)
@@ -34,7 +35,7 @@ class BottleDetailsView(TemplateView):
         conv_size = size
         if UOM == 'L':
             conv_size = conv_size*1000
-        context['PPU'] = round(price*(750/conv_size),5)
+        context['PPU'] = round(price*(750/conv_size), 5)
         context['imgsrc'] = imgsrc
 
         # to add the calculated values, do I add them to the context['items'] = thisBottle
