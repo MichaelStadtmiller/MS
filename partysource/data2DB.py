@@ -24,7 +24,7 @@ def main():
     search = raw_input('Enter a search term: ')
     # search = 'Corner Creek'
     print "-------------" + search
-    URL = 'https://www.thepartysource.com/express/results.php?o=0&t=&s='+search.replace(' ','+')# +'&sort=invQOH'
+    URL = 'https://www.thepartysource.com/express/results.php?o=0&t=&s='+search.replace(' ', '+')
     getProducts(URL)
 
 
@@ -39,7 +39,7 @@ def getPriceQOH(myURL):
     soup = BeautifulSoup(html.text, "html.parser")
     
     # get Price/QOH
-    table = soup.find('table', attrs={'class':'itemHotspot'})
+    table = soup.find('table', attrs={'class': 'itemHotspot'})
     rows = table.find_all('tr')
     for row in rows:
         cols = row.find_all('td')
@@ -50,7 +50,7 @@ def getPriceQOH(myURL):
             except:
                 price = float(str(cols[0].next_element.next_element.next_element.strip())[1:])
                 retail = price
-        if row.strong.string == 'Qty Available': # current QOH
+        if row.strong.string == 'Qty Available':  # current QOH
             QOH = int(cols[1].string.strip())
 
     # pass values to list
@@ -60,11 +60,11 @@ def getPriceQOH(myURL):
 
 def getProductDetail(myURL):
     mylist = []
-    headers = {'Accept':'text/css,*/*;q=0.1',
-        'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-        'Accept-Encoding':'gzip,deflate,sdch',
-        'Accept-Language':'en-US,en;q=0.8',
-        'User-Agent':'Mozilla/5 (Solaris 10) Gecko'}
+    headers = {'Accept': 'text/css,*/*;q=0.1',
+        'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+        'Accept-Encoding': 'gzip,deflate,sdch',
+        'Accept-Language': 'en-US,en;q=0.8',
+        'User-Agent': 'Mozilla/5 (Solaris 10) Gecko'}
     html = requests.get(myURL, headers=headers)
     soup = BeautifulSoup(html.text, "html.parser")
     table = soup.find('table', attrs={'class':'itemDisplay'})
@@ -73,8 +73,8 @@ def getProductDetail(myURL):
     name = str(rows[0].find('strong').string.strip())
     # Image and Description
     cols = rows[7].find_all('td')
-    img=str(cols[0].find('img')['src'].strip())
-    desc=str(cols[1].string.encode('utf-8').strip())
+    img = str(cols[0].find('img')['src'].strip())
+    desc = str(cols[1].string.encode('utf-8').strip())
 
     category = str(rows[8].find_all('a')[0].string)
     origin = str(rows[8].find_all('a')[1].string)
@@ -103,18 +103,18 @@ def getProductDetail(myURL):
 
 def getProducts(myURL):
     bottle = []
-    headers = {'Accept':'text/css,*/*;q=0.1',
-        'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-        'Accept-Encoding':'gzip,deflate,sdch',
-        'Accept-Language':'en-US,en;q=0.8',
-        'User-Agent':'Mozilla/5 (Solaris 10) Gecko'}
+    headers = {'Accept': 'text/css,*/*;q=0.1',
+        'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+        'Accept-Encoding': 'gzip,deflate,sdch',
+        'Accept-Language': 'en-US,en;q=0.8',
+        'User-Agent': 'Mozilla/5 (Solaris 10) Gecko'}
     html = requests.get(myURL, headers=headers)
     soup = BeautifulSoup(html.text, "html.parser")
     table = soup.find('table', attrs={'class':'searchResults'})
     rows = table.find_all('tr', class_=lambda x : x !='legend')
     for row in rows:
-        cols = row.find_all('td')  #whole colum
-        if cols[5].string.strip() in ['low-stock','in-stock']:
+        cols = row.find_all('td')  # whole colum
+        if cols[5].string.strip() in ['low-stock', 'in-stock']:
             ext = cols[1].find('a').get('href')
             j = len(ext)-(ext.index("="))-1
             # populate list
@@ -123,32 +123,32 @@ def getProducts(myURL):
             bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
             bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
 
-            #get price per fifth
+            # get price per fifth
             conv_size = bottle[13]
             if bottle[14] == 'L':
-                conv_size = conv_size*1000
+                conv_size *= 1000
             PPU = round(bottle[18]*(750.0/conv_size), 2)
 
-            #get discount price and total investment required.
+            # get discount price and total investment required.
             if bottle[20] > 12:
                 q = 12
             else:
                 q = bottle[20]
-            invstmt = round(q*bottle[18]*0.9,2)
-            dPrice = round(invstmt/q,2)
-            dPPU = round(PPU*0.9,2)
+            invstmt = round(q*bottle[18]*0.9, 2)
+            dPrice = round(invstmt/q, 2)
+            dPPU = round(PPU*0.9, 2)
 
             bottle.extend([str(PPU), str(invstmt), str(dPrice), str(dPPU)])
 
             # write to DB
             writeDB(bottle)
-            print bottle[1] #debug
+            print bottle[1] # debug
 
             bottle = []  # clear list
 
     # More product - next page is coming back sorted and is duplicating
     #  from the first page and/or missing product completely
-    rs = table.find_all('tr', class_=lambda x : x=='legend')
+    rs = table.find_all('tr', class_=lambda x: x == 'legend')
     for r in reversed(rs):
         cs = r.find_all('td')
         try:
@@ -158,9 +158,10 @@ def getProducts(myURL):
         except:
             break
 
+
 def writeDB(mylist):
     try:
-        conn=psycopg2.connect("dbname='dbMS' user='dbams' host='localhost' password='pineappledb'")
+        conn = psycopg2.connect("dbname='dbMS' user='dbams' host='localhost' password='pineappledb'")
     except:
         print "SQL DB connection failed"
     cur = conn.cursor()
@@ -168,7 +169,8 @@ def writeDB(mylist):
     try:
         cur.execute("""INSERT into partysource_bottle ("PSID", name, img, "desc", cat, origin, \
             classi, region, prodtype, "ABV", style1, "package", style2, size, "UOM", age, \
-            container, brand, price, retail, "QOH", "PPU", invstmt, "dPrice", "dPPU") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, \
+            container, brand, price, retail, "QOH", "PPU", invstmt, "dPrice", "dPPU")
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, \
             %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", mylist)
     except ValueError:
         print "SQL INSERT error" + ValueError
