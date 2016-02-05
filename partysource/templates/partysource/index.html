@@ -3,8 +3,10 @@
 {% block title %}Party title {% endblock %}
 {% block primary %}
 <h3> Table of bottles</h3>
+Search <button type="button" data-filter-column="8" data-filter-text="<=100"><$100</button> in the Investment column<br>
+<button type="button" class="reset">Reset</button> <!-- targeted by the "filter_reset" option    -->
 {% if my_bottles.items %}
-<table id="myTable">
+<table id="myTable" class="tablesorter">
     <thead>
         <tr>
             <th>Name</th>
@@ -15,7 +17,7 @@
             <th>On-Hand</th>
             <th>Price</th>
             <th>$/5th</th>
-            <th>Investment</th>
+            <th data-placeholder="Try <-$200">Investment</th>
             <th>Discount Price</th>
             <th>Disc $/5th</th>
         </tr>
@@ -29,11 +31,11 @@
             <td>{{ bottle.brand }}</td>
             <td>{{ bottle.package }}</td>
             <td>{{ bottle.QOH }}</td>
-            <td>{{ bottle.price }}</td>
-            <td>{{ bottle.PPU }}</td>
-            <td>{{ bottle.invstmt }}</td>
-            <td>{{ bottle.dPrice }}</td>
-            <td>{{ bottle.dPPU }}</td>
+            <td>${{ bottle.price }}</td>
+            <td>${{ bottle.PPU }}</td>
+            <td>${{ bottle.invstmt }}</td>
+            <td>${{ bottle.dPrice }}</td>
+            <td>${{ bottle.dPPU }}</td>
         </tr>
         {% endfor %}
     </tbody>

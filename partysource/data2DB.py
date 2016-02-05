@@ -67,33 +67,104 @@ def getProductDetail(myURL):
         'User-Agent': 'Mozilla/5 (Solaris 10) Gecko'}
     html = requests.get(myURL, headers=headers)
     soup = BeautifulSoup(html.text, "html.parser")
-    table = soup.find('table', attrs={'class':'itemDisplay'})
+    table = soup.find('table', attrs={'class': 'itemDisplay'})
     rows = table.find_all('tr')
 
     name = str(rows[0].find('strong').string.strip())
     # Image and Description
     cols = rows[7].find_all('td')
-    img = str(cols[0].find('img')['src'].strip())
-    desc = str(cols[1].string.encode('utf-8').strip())
+    try:
+        img = str(cols[0].find('img')['src'].strip())
+    except:
+        print str(cols[0].find('img')['src'].strip())
+        img = ""
 
-    category = str(rows[8].find_all('a')[0].string)
-    origin = str(rows[8].find_all('a')[1].string)
-    classi = str(rows[9].find_all('a')[0].string)
-    region = str(rows[9].find_all('a')[1].string)
-    prodtype = str(rows[10].find_all('a')[0].string)
-    ABV = float(rows[10].find_all('a')[1].string)
-    style1 = str(rows[11].find_all('a')[0].string)
-    package = str(rows[11].find_all('a')[1].string)
-    style2 = str(rows[12].find_all('a')[0].string)
-    volume = str(rows[12].find_all('a')[1].string)
-    age = str(rows[13].find_all('a')[0].string)
-    container = str(rows[13].find_all('a')[1].string)
-    brand = str(rows[14].find_all('a')[0].string )
+    try:
+        desc = str(cols[1].string.encode('utf-8').strip())
+    except:
+        print str(cols[1].string.encode('utf-8').strip())
+        desc = ""
+
+    try:
+        category = str(rows[8].find_all('a')[0].string)
+    except:
+        category = ""
+
+    try:
+        origin = str(rows[8].find_all('a')[1].string)
+    except:
+        origin = ""
+
+    try:
+        classi = str(rows[9].find_all('a')[0].string)
+    except:
+        classi = ""
+
+    try:
+        region = str(rows[9].find_all('a')[1].string)
+    except:
+        region = ""
+
+    try:
+        prodtype = str(rows[10].find_all('a')[0].string)
+    except:
+        prodtype = ""
+
+    try:
+        ABV = float(rows[10].find_all('a')[1].string)
+    except:
+        ABV = 0.0
+
+    try:
+        style1 = str(rows[11].find_all('a')[0].string)
+    except:
+        style1 = ""
+
+    try:
+        package = str(rows[11].find_all('a')[1].string)
+    except:
+        package = ""
+
+    try:
+        style2 = str(rows[12].find_all('a')[0].string)
+    except:
+        style2=""
+
+    try:
+        volume = str(rows[12].find_all('a')[1].string)
+    except:
+        volume = ""
+
+    try:
+        age = str(rows[13].find_all('a')[0].string)
+    except:
+        age = ""
+
+    try:
+        container = str(rows[13].find_all('a')[1].string)
+    except:
+        container = ""
+
+    try:
+        brand = str(rows[14].find_all('a')[0].string)
+    except:
+        brand = ""
  
     # split volume to get size and UOM
-    a = volume.split(' ')
-    size = float(a[0])
-    UOM = str(a[1])
+    try:
+        a = volume.split(' ')
+    except:
+        a = ""
+
+    try:
+        size = float(a[0])
+    except:
+        size = ""
+
+    try:
+        UOM = str(a[1])
+    except:
+        UOM = ""
 
     # pass values to list
     mylist.extend([name, img, desc, category, origin,
@@ -110,41 +181,44 @@ def getProducts(myURL):
         'User-Agent': 'Mozilla/5 (Solaris 10) Gecko'}
     html = requests.get(myURL, headers=headers)
     soup = BeautifulSoup(html.text, "html.parser")
-    table = soup.find('table', attrs={'class':'searchResults'})
-    rows = table.find_all('tr', class_=lambda x : x !='legend')
+    table = soup.find('table', attrs={'class': 'searchResults'})
+    rows = table.find_all('tr', class_=lambda x: x != 'legend')
     for row in rows:
-        cols = row.find_all('td')  # whole colum
+        cols = row.find_all('td')  # whole column
         if cols[5].string.strip() in ['low-stock', 'in-stock']:
             ext = cols[1].find('a').get('href')
             j = len(ext)-(ext.index("="))-1
             # populate list
-#            i = str([ext[-j:]][0])
+            # i = str([ext[-j:]][0])
             bottle.extend([int(str([ext[-j:]][0]))])
-            bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
-            bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
+            if int(str([ext[-j:]][0])) not in (42831, 38456):
+                print int(str([ext[-j:]][0]))
 
-            # get price per fifth
-            conv_size = bottle[13]
-            if bottle[14] == 'L':
-                conv_size *= 1000
-            PPU = round(bottle[18]*(750.0/conv_size), 2)
+                bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
+                bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
 
-            # get discount price and total investment required.
-            if bottle[20] > 12:
-                q = 12
-            else:
-                q = bottle[20]
-            invstmt = round(q*bottle[18]*0.9, 2)
-            dPrice = round(invstmt/q, 2)
-            dPPU = round(PPU*0.9, 2)
+                # get price per fifth
+                conv_size = bottle[13]
+                if bottle[14] == 'L':
+                    conv_size *= 1000
+                PPU = round(bottle[18]*(750.0/conv_size), 2)
 
-            bottle.extend([str(PPU), str(invstmt), str(dPrice), str(dPPU)])
+                # get discount price and total investment required.
+                if bottle[20] > 12:
+                    q = 12
+                else:
+                    q = bottle[20]
+                invstmt = round(q*bottle[18]*0.9, 2)
+                dPrice = round(invstmt/q, 2)
+                dPPU = round(PPU*0.9, 2)
 
-            # write to DB
-            writeDB(bottle)
-            print bottle[1] # debug
+                bottle.extend([str(PPU), str(invstmt), str(dPrice), str(dPPU)])
 
-            bottle = []  # clear list
+                # write to DB
+                writeDB(bottle)
+                print bottle[1]  # debug
+
+                bottle = []  # clear list
 
     # More product - next page is coming back sorted and is duplicating
     #  from the first page and/or missing product completely
@@ -178,4 +252,3 @@ def writeDB(mylist):
 
 if __name__ == '__main__':
     main()
-
