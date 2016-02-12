@@ -23,6 +23,10 @@ class Bottle(models.Model):
     price = models.DecimalField(max_digits=5,decimal_places=2,default=0)
     retail = models.DecimalField(max_digits=5,decimal_places=2,default=0)
     QOH = models.IntegerField(default=0)
+    PPU = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    invstmt = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    dPrice = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    dPPU = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
 #    @property
 #    def calculated_field(self):

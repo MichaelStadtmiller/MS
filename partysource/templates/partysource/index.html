@@ -21,6 +21,10 @@
             <th>Package</th>
             <th>On-Hand</th>
             <th>Price</th>
+            <th>$/5th</th>
+            <th>Investment</th>
+            <th>Discount Price</th>
+            <th>Disc $/5th</th>
         </tr>
     </thead>
     <tbody>
@@ -32,7 +36,11 @@
             <td>{{ bottle.brand }}</td>
             <td>{{ bottle.package }}</td>
             <td>{{ bottle.QOH }}</td>
-            <td>{{ bottle.price }}</td>
+            <td>${{ bottle.price }}</td>
+            <td>${{ bottle.PPU }}</td>
+            <td>${{ bottle.invstmt }}</td>
+            <td>${{ bottle.dPrice }}</td>
+            <td>${{ bottle.dPPU }}</td>
         </tr>
         {% endfor %}
     </tbody>

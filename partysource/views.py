@@ -44,11 +44,11 @@ class BottleDetailsView(TemplateView):
 
 
 class BottleFilter(django_filters.FilterSet):
-    QOH = django_filters.NumberFilter(lookup_type='lt')
-    price = django_filters.RangeFilter()
+    invstmt = django_filters.NumberFilter(lookup_type='lt')
+    PPU = django_filters.RangeFilter()
 
     class Meta:
         model = Bottle
-        fields = ['price', 'QOH']
+        fields = ['PPU', 'invstmt']
 
 
