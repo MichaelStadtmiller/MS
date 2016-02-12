@@ -2,6 +2,8 @@ from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.views.generic import TemplateView
 from .models import Bottle
+import django_filters
+
 
 
 class BottlesClass(TemplateView):
@@ -17,6 +19,12 @@ class BottlesClass(TemplateView):
         all_bottles = Bottle.objects.order_by('name')
         context['items'] = all_bottles
         return context
+
+#def index(request):
+#    all_bottles = BottleFilter(request.GET, queryset=Bottle.objects.all())
+#    template = loader.get_template('partysource/index.html')
+#    context = RequestContext(request, {'all_bottles': all_bottles, },)
+#    return HttpResponse(template.render(context))
 
 
 class BottleDetailsView(TemplateView):
@@ -48,4 +56,14 @@ class BottleDetailsView(TemplateView):
         # to add the calculated values, do I add them to the context['items'] = thisBottle
         # e.g. context['items'] = thisBottle + context['PPU'] + context['imgsrc']
         return context
+
+
+class BottleFilter(django_filters.FilterSet):
+    QOH = django_filters.NumberFilter(lookup_type='lt')
+    price = django_filters.RangeFilter()
+
+    class Meta:
+        model = Bottle
+        fields = ['price', 'QOH']
+
 

@@ -1,7 +1,14 @@
 {% extends "base.html" %}
 {% block header %}<h1>Party Source</h1>{% endblock %}
-{% block title %}Party title {% endblock %}
+{% block title %}Find a Bottle{% endblock %}
 {% block primary %}
+<a href="/partysource">Back</a>
+<form action="" method="get">
+    <fieldset class="form-group">
+        {{ all_bottles.form.as_p }}
+        <input type="submit" />
+    </fieldset>
+</form>
 <h3> Table of bottles</h3>
 {% if my_bottles.items %}
 <table id="myTable" class="tablesorter">
