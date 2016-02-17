@@ -24,22 +24,22 @@ def main():
     search = raw_input('Enter a search term: ')
     # search = 'Corner Creek'
     print "-------------" + search
-    URL = 'https://www.thepartysource.com/express/results.php?o=0&t=&s='+search.replace(' ','+')# +'&sort=invQOH'
+    URL = 'https://www.thepartysource.com/express/results.php?o=0&t=&s='+search.replace(' ', '+')  # +'&sort=invQOH'
     getProducts(URL)
 
 
 def getPriceQOH(myURL):
     mylist = []
-    headers = {'Accept':'text/css,*/*;q=0.1',
-        'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-        'Accept-Encoding':'gzip,deflate,sdch',
-        'Accept-Language':'en-US,en;q=0.8',
-        'User-Agent':'Mozilla/5 (Solaris 10) Gecko'}
+    headers = {'Accept': 'text/css,*/*;q=0.1',
+               'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+               'Accept-Encoding': 'gzip,deflate,sdch',
+               'Accept-Language': 'en-US,en;q=0.8',
+               'User-Agent': 'Mozilla/5 (Solaris 10) Gecko'}
     html = requests.get(myURL, headers=headers)
     soup = BeautifulSoup(html.text, "html.parser")
     
     # get Price/QOH
-    table = soup.find('table', attrs={'class':'itemHotspot'})
+    table = soup.find('table', attrs={'class': 'itemHotspot'})
     rows = table.find_all('tr')
     for row in rows:
         cols = row.find_all('td')
@@ -60,11 +60,11 @@ def getPriceQOH(myURL):
 
 def getProductDetail(myURL):
     mylist = []
-    headers = {'Accept':'text/css,*/*;q=0.1',
-        'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-        'Accept-Encoding':'gzip,deflate,sdch',
-        'Accept-Language':'en-US,en;q=0.8',
-        'User-Agent':'Mozilla/5 (Solaris 10) Gecko'}
+    headers = {'Accept': 'text/css,*/*;q=0.1',
+               'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+               'Accept-Encoding': 'gzip,deflate,sdch',
+               'Accept-Language': 'en-US,en;q=0.8',
+               'User-Agent': 'Mozilla/5 (Solaris 10) Gecko'}
     html = requests.get(myURL, headers=headers)
     soup = BeautifulSoup(html.text, "html.parser")
     table = soup.find('table', attrs={'class':'itemDisplay'})
@@ -73,8 +73,8 @@ def getProductDetail(myURL):
     name = str(rows[0].find('strong').string.strip())
     # Image and Description
     cols = rows[7].find_all('td')
-    img=str(cols[0].find('img')['src'].strip())
-    desc=str(cols[1].string.encode('utf-8').strip())
+    img = str(cols[0].find('img')['src'].strip())
+    desc = str(cols[1].string.encode('utf-8').strip())
 
     category = str(rows[8].find_all('a')[0].string)
     origin = str(rows[8].find_all('a')[1].string)
@@ -96,25 +96,25 @@ def getProductDetail(myURL):
     UOM = str(a[1])
 
     # pass values to list
-    mylist.extend([name, img, desc, category, origin,
-        classi, region, prodtype, ABV,  style1, package, style2, size, UOM, age, container, brand])
+    mylist.extend([name, img, desc, category, origin, classi, region,
+                   prodtype, ABV,  style1, package, style2, size, UOM, age, container, brand])
     return mylist
 
 
 def getProducts(myURL):
     bottle = []
-    headers = {'Accept':'text/css,*/*;q=0.1',
-        'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-        'Accept-Encoding':'gzip,deflate,sdch',
-        'Accept-Language':'en-US,en;q=0.8',
-        'User-Agent':'Mozilla/5 (Solaris 10) Gecko'}
+    headers = {'Accept': 'text/css,*/*;q=0.1',
+               'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+               'Accept-Encoding': 'gzip,deflate,sdch',
+               'Accept-Language': 'en-US,en;q=0.8',
+               'User-Agent': 'Mozilla/5 (Solaris 10) Gecko'}
     html = requests.get(myURL, headers=headers)
     soup = BeautifulSoup(html.text, "html.parser")
-    table = soup.find('table', attrs={'class':'searchResults'})
-    rows = table.find_all('tr', class_=lambda x : x !='legend')
+    table = soup.find('table', attrs={'class': 'searchResults'})
+    rows = table.find_all('tr', class_=lambda x: x != 'legend')
     for row in rows:
-        cols = row.find_all('td') #whole colum
-        if cols[5].string.strip() in ['low-stock','in-stock']:
+        cols = row.find_all('td')  # whole column
+        if cols[5].string.strip() in ['low-stock', 'in-stock']:
             ext = cols[1].find('a').get('href')
             j = len(ext)-(ext.index("="))-1
             # populate list
@@ -128,11 +128,11 @@ def getProducts(myURL):
             writeDB(bottle)
 #            print bottle #debug
 
-            bottle = [] # clear list
+            bottle = []  # clear list
 
     # More product - next page is coming back sorted and is duplicating
     #  from the first page and/or missing product completely
-    rs = table.find_all('tr', class_=lambda x : x=='legend')
+    rs = table.find_all('tr', class_=lambda x: x == 'legend')
     for r in reversed(rs):
         cs = r.find_all('td')
         try:
@@ -141,6 +141,7 @@ def getProducts(myURL):
             break
         except:
             break
+
 
 def writeDB(mylist):
     try:
