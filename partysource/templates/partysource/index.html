@@ -14,6 +14,7 @@
 <table id="myTable">
     <thead>
         <tr>
+            <th>Bottle</th>
             <th>Name</th>
             <th>Product</th>
             <th>Style</th>
@@ -30,6 +31,7 @@
     <tbody>
         {% for bottle in all_bottles %}
         <tr>
+            <td><img src="https://www.thepartysource.com/express/{{ bottle.img }}"/></td>
             <td><a href="/partysource/{{ bottle.PSID }}/details">{{ bottle.name }}</a></td>
             <td>{{ bottle.prodtype }}</td>
             <td>{{ bottle.style1 }}</td>
