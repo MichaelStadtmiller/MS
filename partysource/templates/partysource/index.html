@@ -1,54 +1,60 @@
 {% extends "base.html" %}
-{% block header %}<h1>Party Source</h1>{% endblock %}
-{% block title %}Find a Bottle{% endblock %}
+{% block header %}
+    <h1>Party Source</h1>
+    <h2>Find discounted bottles. Try something new!</h2>
+{% endblock %}
 {% block primary %}
-<a href="/partysource">Back</a>
-<form action="" method="get">
-    <fieldset class="form-group">
-        {{ all_bottles.form.as_p }}
-        <input type="submit" />
-    </fieldset>
-</form>
-<h3> Table of bottles</h3>
-{% if all_bottles %}
-<table id="myTable">
-    <thead>
-        <tr>
-            <th>Bottle</th>
-            <th>Name</th>
-            <th>Product</th>
-            <th>Style</th>
-            <th>Brand</th>
-            <th>Package</th>
-            <th>On-Hand</th>
-            <th>Price</th>
-            <th>$/5th</th>
-            <th>Investment</th>
-            <th>Discount Price</th>
-            <th>Disc $/5th</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for bottle in all_bottles %}
-        <tr>
-            <td><img src="https://www.thepartysource.com/express/{{ bottle.img }}"/></td>
-            <td><a href="/partysource/{{ bottle.PSID }}/details">{{ bottle.name }}</a></td>
-            <td>{{ bottle.prodtype }}</td>
-            <td>{{ bottle.style1 }}</td>
-            <td>{{ bottle.brand }}</td>
-            <td>{{ bottle.package }}</td>
-            <td>{{ bottle.QOH }}</td>
-            <td>${{ bottle.price }}</td>
-            <td>${{ bottle.PPU }}</td>
-            <td>${{ bottle.invstmt }}</td>
-            <td>${{ bottle.dPrice }}</td>
-            <td>${{ bottle.dPPU }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div id="layout" class="pure-g">
+    <div class="pure-u-1 pure-u-md-1 pure-u-lg-1-5">
+        <a href="/partysource">Back</a>
+        <form class="pure-form pure-form-stacked" action="" method="get">
+            <fieldset class="form-group">
+                {{ all_bottles.form.as_p }}
+                <input type="submit" />
+            </fieldset>
+        </form>
+    </div>
+    <div class="pure-u-22-24 pure-u-lg-18-24">
+        {% if all_bottles %}
+        <table class="pure-table  pure-table-horizontal" id="myTable">
+            <thead>
+                <tr>
+                    <th>Bottle</th>
+                    <th>Description</th>
+                    <th>Stock</th>
+                    <th>Investment</th>
+                    <th>$/5th</th>
+                    <th>Disc $/5th</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bottle in all_bottles %}
+                <tr>
+                    <td>
+                        <a href="/partysource/{{ bottle.PSID }}/details">
+                        <img class="pure-img" src="https://www.thepartysource.com/express/{{ bottle.img }}"/></a>
+                    </td>
+                    <td>
+                        <div>
+                            <h5>{{ bottle.name }}</h5>
+                            <p>{{ bottle.style1 }}</p>
+                            <p>{{ bottle.brand }}</p>
+                            <p>{{ bottle.package }}</p>
+                            <p>${{ bottle.price }}/unit</p>
+                        </div>
+                    </td>
+                    <td>{{ bottle.QOH }}</td>
+                    <td>${{ bottle.invstmt }}</td>
+                    <td>${{ bottle.PPU }}</td>
+                    <td>${{ bottle.dPPU }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-{% else %}
-    <p> No bottles; update the DB </p>
-{% endif %}
+        {% else %}
+            <p> No bottles; update the DB </p>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
