@@ -24,17 +24,17 @@ def main():
     search = raw_input('Enter a search term: ')
     # search = 'Corner Creek'
     print "-------------" + search
-    URL = 'https://www.thepartysource.com/express/results.php?o=0&t=&s='+search.replace(' ', '+')
+    URL = 'https://www.thepartysource.com/express/results.php?o=0&t=&s='+search.replace(' ', '+')  # +'&sort=invQOH'
     getProducts(URL)
 
 
 def getPriceQOH(myURL):
     mylist = []
-    headers = {'Accept':'text/css,*/*;q=0.1',
-        'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-        'Accept-Encoding':'gzip,deflate,sdch',
-        'Accept-Language':'en-US,en;q=0.8',
-        'User-Agent':'Mozilla/5 (Solaris 10) Gecko'}
+    headers = {'Accept': 'text/css,*/*;q=0.1',
+               'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+               'Accept-Encoding': 'gzip,deflate,sdch',
+               'Accept-Language': 'en-US,en;q=0.8',
+               'User-Agent': 'Mozilla/5 (Solaris 10) Gecko'}
     html = requests.get(myURL, headers=headers)
     soup = BeautifulSoup(html.text, "html.parser")
     
@@ -61,10 +61,10 @@ def getPriceQOH(myURL):
 def getProductDetail(myURL):
     mylist = []
     headers = {'Accept': 'text/css,*/*;q=0.1',
-        'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-        'Accept-Encoding': 'gzip,deflate,sdch',
-        'Accept-Language': 'en-US,en;q=0.8',
-        'User-Agent': 'Mozilla/5 (Solaris 10) Gecko'}
+               'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+               'Accept-Encoding': 'gzip,deflate,sdch',
+               'Accept-Language': 'en-US,en;q=0.8',
+               'User-Agent': 'Mozilla/5 (Solaris 10) Gecko'}
     html = requests.get(myURL, headers=headers)
     soup = BeautifulSoup(html.text, "html.parser")
     table = soup.find('table', attrs={'class': 'itemDisplay'})
@@ -73,82 +73,22 @@ def getProductDetail(myURL):
     name = str(rows[0].find('strong').string.strip())
     # Image and Description
     cols = rows[7].find_all('td')
-    try:
-        img = str(cols[0].find('img')['src'].strip())
-    except:
-        print str(cols[0].find('img')['src'].strip())
-        img = ""
+    img = str(cols[0].find('img')['src'].strip())
+    desc = str(cols[1].string.encode('utf-8').strip())
 
-    try:
-        desc = str(cols[1].string.encode('utf-8').strip())
-    except:
-        print str(cols[1].string.encode('utf-8').strip())
-        desc = ""
-
-    try:
-        category = str(rows[8].find_all('a')[0].string)
-    except:
-        category = ""
-
-    try:
-        origin = str(rows[8].find_all('a')[1].string)
-    except:
-        origin = ""
-
-    try:
-        classi = str(rows[9].find_all('a')[0].string)
-    except:
-        classi = ""
-
-    try:
-        region = str(rows[9].find_all('a')[1].string)
-    except:
-        region = ""
-
-    try:
-        prodtype = str(rows[10].find_all('a')[0].string)
-    except:
-        prodtype = ""
-
-    try:
-        ABV = float(rows[10].find_all('a')[1].string)
-    except:
-        ABV = 0.0
-
-    try:
-        style1 = str(rows[11].find_all('a')[0].string)
-    except:
-        style1 = ""
-
-    try:
-        package = str(rows[11].find_all('a')[1].string)
-    except:
-        package = ""
-
-    try:
-        style2 = str(rows[12].find_all('a')[0].string)
-    except:
-        style2=""
-
-    try:
-        volume = str(rows[12].find_all('a')[1].string)
-    except:
-        volume = ""
-
-    try:
-        age = str(rows[13].find_all('a')[0].string)
-    except:
-        age = ""
-
-    try:
-        container = str(rows[13].find_all('a')[1].string)
-    except:
-        container = ""
-
-    try:
-        brand = str(rows[14].find_all('a')[0].string)
-    except:
-        brand = ""
+    category = str(rows[8].find_all('a')[0].string)
+    origin = str(rows[8].find_all('a')[1].string)
+    classi = str(rows[9].find_all('a')[0].string)
+    region = str(rows[9].find_all('a')[1].string)
+    prodtype = str(rows[10].find_all('a')[0].string)
+    ABV = float(rows[10].find_all('a')[1].string)
+    style1 = str(rows[11].find_all('a')[0].string)
+    package = str(rows[11].find_all('a')[1].string)
+    style2 = str(rows[12].find_all('a')[0].string)
+    volume = str(rows[12].find_all('a')[1].string)
+    age = str(rows[13].find_all('a')[0].string)
+    container = str(rows[13].find_all('a')[1].string)
+    brand = str(rows[14].find_all('a')[0].string )
  
     # split volume to get size and UOM
     try:
@@ -167,18 +107,18 @@ def getProductDetail(myURL):
         UOM = ""
 
     # pass values to list
-    mylist.extend([name, img, desc, category, origin,
-        classi, region, prodtype, ABV,  style1, package, style2, size, UOM, age, container, brand])
+    mylist.extend([name, img, desc, category, origin, classi, region,
+                   prodtype, ABV,  style1, package, style2, size, UOM, age, container, brand])
     return mylist
 
 
 def getProducts(myURL):
     bottle = []
     headers = {'Accept': 'text/css,*/*;q=0.1',
-        'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-        'Accept-Encoding': 'gzip,deflate,sdch',
-        'Accept-Language': 'en-US,en;q=0.8',
-        'User-Agent': 'Mozilla/5 (Solaris 10) Gecko'}
+               'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+               'Accept-Encoding': 'gzip,deflate,sdch',
+               'Accept-Language': 'en-US,en;q=0.8',
+               'User-Agent': 'Mozilla/5 (Solaris 10) Gecko'}
     html = requests.get(myURL, headers=headers)
     soup = BeautifulSoup(html.text, "html.parser")
     table = soup.find('table', attrs={'class': 'searchResults'})
