@@ -10,6 +10,5 @@ i currently have the MSproj/urls.py ^$/ pointing to app. i need to change that t
 Setup using purecss.io
 
 ## Apps
-First app I'm playing with uses BeautifulSoup to screen scrap a website. Coming soon
-
-## Test
+###Party Source
+`python partysource/data2DB.py`
