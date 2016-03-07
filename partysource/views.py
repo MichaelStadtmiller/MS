@@ -6,25 +6,25 @@ import django_filters
 
 
 
-class BottlesClass(TemplateView):
-    template_name = 'partysource/index.html'
+#class BottlesClass(TemplateView):
+#    template_name = 'partysource/index.html'
+#
+#    def get_context_data(self):
+#        context = super(BottlesClass, self).get_context_data()
+#        context['all_bottles'] = self.get_bottles()
+#        return context
+#
+#    def get_bottles(self):
+#        context = {}
+#        all_bottles = Bottle.objects.order_by('name')
+#        context['items'] = all_bottles
+#        return context
 
-    def get_context_data(self):
-        context = super(BottlesClass, self).get_context_data()
-        context['my_bottles'] = self.get_bottles()
-        return context
-
-    def get_bottles(self):
-        context = {}
-        all_bottles = Bottle.objects.order_by('name')
-        context['items'] = all_bottles
-        return context
-
-#def index(request):
-#    all_bottles = BottleFilter(request.GET, queryset=Bottle.objects.all())
-#    template = loader.get_template('partysource/index.html')
-#    context = RequestContext(request, {'all_bottles': all_bottles, },)
-#    return HttpResponse(template.render(context))
+def index(request):
+    all_bottles = BottleFilter(request.GET, queryset=Bottle.objects.all())
+    template = loader.get_template('partysource/index.html')
+    context = RequestContext(request, {'all_bottles': all_bottles, },)
+    return HttpResponse(template.render(context))
 
 
 class BottleDetailsView(TemplateView):
