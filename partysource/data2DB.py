@@ -125,12 +125,35 @@ def getProducts(myURL):
     rows = table.find_all('tr', class_=lambda x: x != 'legend')
     for row in rows:
         cols = row.find_all('td')  # whole column
-        if cols[5].string.strip() in ['low-stock', 'in-stock']:
+        # TO DO:
+
+            # check if low-stock or in-stock; check if 750ml or bigger
+            # get ID
+            # if ID in DB and name = name then update getpriceQOH
+            # if ID in DB and name <> name then delete record then getProductDetail and getPriceQOH
+            # if ID not in DB, add record getProductDetail and getPriceQOH
+
+        if (cols[5].string.strip() in ['low-stock', 'in-stock']) and \
+                (cols[2].string.strip() in ['750 ML', '1.0 L', '1.75 L']):
             ext = cols[1].find('a').get('href')
-            j = len(ext)-(ext.index("="))-1
-            # populate list
-            # i = str([ext[-j:]][0])
-            bottle.extend([int(str([ext[-j:]][0]))])
+            j = len(ext)-(ext.index("="))-1  # get id as string
+            i = int(str([ext[-j:]][0]))      # convert id to int
+            # if i in DB
+                # if name = name then: update(getPriceQOH)
+                # else (name <> name) then: delete id; add both
+                    # delete ID
+                    bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
+                    bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
+            #else: add both
+                bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
+                bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
+
+            # now post-process PPU, etc.
+
+            #
+            bottle.extend([i])
+
+            #REMOVE ID CHECK
             if int(str([ext[-j:]][0])) not in (42831, 38456):
                 print int(str([ext[-j:]][0]))
 
