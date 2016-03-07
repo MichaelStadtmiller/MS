@@ -4,9 +4,8 @@ from django.views.generic import TemplateView
 from .models import Bottle
 import django_filters
 
-
-
-#class BottlesClass(TemplateView):
+# #Class Based View trial -- not working...
+# class BottlesClass(TemplateView):
 #    template_name = 'partysource/index.html'
 #
 #    def get_context_data(self):
