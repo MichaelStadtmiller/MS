@@ -1,9 +1,23 @@
 from django.http import HttpResponse
 from django.template import RequestContext, loader
-from django.views.generic import TemplateView, View
+from django.views.generic import TemplateView
 from .models import Bottle
 import django_filters
 
+# #Class Based View trial -- not working...
+# class BottlesClass(TemplateView):
+#    template_name = 'partysource/index.html'
+#
+#    def get_context_data(self):
+#        context = super(BottlesClass, self).get_context_data()
+#        context['all_bottles'] = self.get_bottles()
+#        return context
+#
+#    def get_bottles(self):
+#        context = {}
+#        all_bottles = Bottle.objects.order_by('name')
+#        context['items'] = all_bottles
+#        return context
 
 def index(request):
     all_bottles = BottleFilter(request.GET, queryset=Bottle.objects.all())

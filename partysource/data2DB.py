@@ -1,6 +1,3 @@
-## HOW TO RUN ##
-    # My house has been blocked from the site. Use a VPN connection before executing
-
 ## Beautiful Soup
     # http://www.crummy.com/software/BeautifulSoup/bs4/doc/#a-string
     # http://stackoverflow.com/questions/23377533/python-beautifulsoup-parsing-table
@@ -50,7 +47,7 @@ def getPriceQOH(myURL):
             except:
                 price = float(str(cols[0].next_element.next_element.next_element.strip())[1:])
                 retail = price
-        if row.strong.string == 'Qty Available': # current QOH
+        if row.strong.string == 'Qty Available':  # current QOH
             QOH = int(cols[1].string.strip())
 
     # pass values to list
@@ -67,7 +64,7 @@ def getProductDetail(myURL):
                'User-Agent': 'Mozilla/5 (Solaris 10) Gecko'}
     html = requests.get(myURL, headers=headers)
     soup = BeautifulSoup(html.text, "html.parser")
-    table = soup.find('table', attrs={'class':'itemDisplay'})
+    table = soup.find('table', attrs={'class': 'itemDisplay'})
     rows = table.find_all('tr')
 
     name = str(rows[0].find('strong').string.strip())
@@ -91,9 +88,20 @@ def getProductDetail(myURL):
     brand = str(rows[14].find_all('a')[0].string )
  
     # split volume to get size and UOM
-    a = volume.split(' ')
-    size = float(a[0])
-    UOM = str(a[1])
+    try:
+        a = volume.split(' ')
+    except:
+        a = ""
+
+    try:
+        size = float(a[0])
+    except:
+        size = ""
+
+    try:
+        UOM = str(a[1])
+    except:
+        UOM = ""
 
     # pass values to list
     mylist.extend([name, img, desc, category, origin, classi, region,
@@ -114,21 +122,63 @@ def getProducts(myURL):
     rows = table.find_all('tr', class_=lambda x: x != 'legend')
     for row in rows:
         cols = row.find_all('td')  # whole column
-        if cols[5].string.strip() in ['low-stock', 'in-stock']:
+        # TO DO:
+
+            # check if low-stock or in-stock; check if 750ml or bigger
+            # get ID
+            # if ID in DB and name = name then update getpriceQOH
+            # if ID in DB and name <> name then delete record then getProductDetail and getPriceQOH
+            # if ID not in DB, add record getProductDetail and getPriceQOH
+
+        if (cols[5].string.strip() in ['low-stock', 'in-stock']) and \
+                (cols[2].string.strip() in ['750 ML', '1.0 L', '1.75 L']):
             ext = cols[1].find('a').get('href')
-            j = len(ext)-(ext.index("="))-1
-            # populate list
-#            i = str([ext[-j:]][0])
-            bottle.extend([int(str([ext[-j:]][0]))])
-            bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
-            bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
+            j = len(ext)-(ext.index("="))-1  # get id as string
+            i = int(str([ext[-j:]][0]))      # convert id to int
+            # if i in DB
+                # if name = name then: update(getPriceQOH)
+                # else (name <> name) then: delete id; add both
+                    # delete ID
+                    bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
+                    bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
+            #else: add both
+                bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
+                bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
 
-            # write to DB
-            print bottle[1]
-            writeDB(bottle)
-#            print bottle #debug
+            # now post-process PPU, etc.
 
-            bottle = []  # clear list
+            #
+            bottle.extend([i])
+
+            #REMOVE ID CHECK
+            if int(str([ext[-j:]][0])) not in (42831, 38456):
+                print int(str([ext[-j:]][0]))
+
+                bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
+                bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
+
+                # get price per fifth
+                conv_size = bottle[13]
+                if bottle[14] == 'L':
+                    conv_size *= 1000
+                PPU = round(bottle[18]*(750.0/conv_size), 2)
+
+                # get discount price and total investment required.
+                if bottle[20] > 12:
+                    q = 12
+                else:
+                    q = bottle[20]
+                invstmt = round(q*bottle[18]*0.9, 2)
+                dPrice = round(invstmt/q, 2)
+                dPPU = round(PPU*0.9, 2)
+
+                bottle.extend([str(PPU), str(invstmt), str(dPrice), str(dPPU)])
+
+                # write to DB
+                writeDB(bottle)
+                print bottle[1]  # debug
+
+                bottle = []  # clear list
 
     # More product - next page is coming back sorted and is duplicating
     #  from the first page and/or missing product completely
@@ -145,7 +195,7 @@ def getProducts(myURL):
 
 def writeDB(mylist):
     try:
-        conn=psycopg2.connect("dbname='dbMS' user='dbams' host='localhost' password='pineappledb'")
+        conn = psycopg2.connect("dbname='dbMS' user='dbams' host='localhost' password='pineappledb'")
     except:
         print "SQL DB connection failed"
     cur = conn.cursor()
@@ -153,12 +203,12 @@ def writeDB(mylist):
     try:
         cur.execute("""INSERT into partysource_bottle ("PSID", name, img, "desc", cat, origin, \
             classi, region, prodtype, "ABV", style1, "package", style2, size, "UOM", age, \
-            container, brand, price, retail, "QOH") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, \
-            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",mylist)
-    except:
-        print "SQL INSERT error"
+            container, brand, price, retail, "QOH", "PPU", invstmt, "dPrice", "dPPU")
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, \
+            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", mylist)
+    except ValueError:
+        print "SQL INSERT error" + ValueError
     conn.commit()
 
 if __name__ == '__main__':
     main()
-
