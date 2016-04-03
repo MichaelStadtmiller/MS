@@ -10,11 +10,14 @@
     <title>Stadt</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
     <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/grids-responsive-min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,100">
+    <link href="{% static 'css/mystyle.css' %}" rel="stylesheet">
     <link href="{% static 'css/theme.default.min.css' %}" rel="stylesheet">
-	<link href="{% static 'css/mystyle.css' %}" rel="stylesheet">
+
     <script src="{% static 'js/jquery-1.2.6.min.js' %}"></script>
     <script src="{% static 'js/jquery.tablesorter.min.js' %}"></script>
 	<script src="{% static 'js/jquery.tablesorter.widgets.min.js' %}"></script>
+
 
     <!--script>
         $(function(){
@@ -218,7 +221,6 @@
             {% block header %}
             <h1>Michael Stadtmiller</h1>
             <h2>C'mon son</h2>
-            <!--img class="pure-img-responsive" src={% static 'img/man.gif' %}-->
 
             <div class="pure-menu pure-menu-horizontal">
                 <ul class="pure-menu-list">
@@ -251,9 +253,16 @@
             </div>
             {% endblock %}
         </div>
-        <div>
-            {% block title %}</br>{% endblock %}
-            {% block primary %} MINE {% endblock %}
+        <div class="content">
+            <div id="common-layouts" class="content-subhead">
+                {% block title %}{% endblock %}
+            </div>
+            <p>
+                {% block primary %} MINE {% endblock %}
+            </p>
+        </div>
+        <div class="footer">
+            footer
         </div>
     </div>
 

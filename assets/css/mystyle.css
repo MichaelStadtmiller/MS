@@ -1,3 +1,7 @@
+body {
+  font-family: 'Raleway', sans-serif;
+}
+
 /* REQUIRED in CUSTOM THEMES!
  This is the only definition that MUST BE added to any custom themes.
  This is how rows are hidden by filtering (included in provided themes) */
@@ -16,6 +20,7 @@
   -o-transition: line-height 0.1s ease;
   transition: line-height 0.1s ease;
 }
+
 /* optional disabled input styling */
 .tablesorter-filter-row .disabled {
   opacity: 0.5;

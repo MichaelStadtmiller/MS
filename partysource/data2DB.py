@@ -1,6 +1,3 @@
-## HOW TO RUN ##
-    # My house has been blocked from the site. Use a VPN connection before executing
-
 ## Beautiful Soup
     # http://www.crummy.com/software/BeautifulSoup/bs4/doc/#a-string
     # http://stackoverflow.com/questions/23377533/python-beautifulsoup-parsing-table
