@@ -1,3 +1,43 @@
 {% extends "base.html" %}
-{% block title %}About my Site {% endblock %}
-{% block primary %} Apps on the left, contact above.{% endblock %}
+{% load staticfiles %}
+{% block landing %}
+    <!--img class="img-responsive" src={% static 'img/me.jpg' %}-->
+{% endblock %}
+<div class="landing">
+{% block header %}
+    <h1>Michael Stadtmiller</h1>
+    <h2>C'mon son</h2>
+
+    <div class="pure-menu pure-menu-horizontal">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item">
+                <a href="https://github.com/MichaelStadtmiller" target="_blank">
+                    <img class="pure-img-responsive" src={% static 'img/icons/72/Github-Icon.png' %}>
+                </a>
+            </li>
+            <li class="pure-menu-item">
+                <a href="https://www.facebook.com/michaelstadtmiller" target="_blank">
+                    <img class="pure-img-responsive" src={% static 'img/icons/72/facebook-Icon.png' %}>
+                </a>
+            </li>
+            <li class="pure-menu-item">
+                <a href="https://www.linkedin.com/in/michaelstadtmiller" target="_blank">
+                    <img class="pure-img-responsive" src={% static 'img/icons/72/Linkedin.png' %}>
+                </a>
+            </li>
+            <li class="pure-menu-item">
+                <a href="https://twitter.com/MStadtmiller" target="_blank">
+                    <img class="pure-img-responsive" src={% static 'img/icons/72/Twitter-Icon.png' %}>
+                </a>
+            </li>
+            <li class="pure-menu-item">
+                <a href="https://plus.google.com/+MichaelStadtmiller" target="_blank">
+                    <img class="pure-img-responsive" src={% static 'img/icons/72/Google-plus-icon.png' %}>
+                </a>
+            </li>
+        </ul>
+    </div>
+{% endblock %}
+{% block title %}title{% endblock %}
+{% block primary %}primary primary primary{% endblock %}
+</div>

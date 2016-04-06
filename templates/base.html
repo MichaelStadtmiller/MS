@@ -217,40 +217,10 @@
     </div>
 
     <div id="main">
+        {% block landing %}
+        {% endblock %}
         <div class="header">
             {% block header %}
-            <h1>Michael Stadtmiller</h1>
-            <h2>C'mon son</h2>
-
-            <div class="pure-menu pure-menu-horizontal">
-                <ul class="pure-menu-list">
-                    <li class="pure-menu-item">
-                        <a href="https://github.com/MichaelStadtmiller" target="_blank">
-                            <img class="pure-img-responsive" src={% static 'img/icons/72/Github-Icon.png' %}>
-                        </a>
-                    </li>
-                    <li class="pure-menu-item">
-                        <a href="https://www.facebook.com/michaelstadtmiller" target="_blank">
-                            <img class="pure-img-responsive" src={% static 'img/icons/72/facebook-Icon.png' %}>
-                        </a>
-                    </li>
-                    <li class="pure-menu-item">
-                        <a href="https://www.linkedin.com/in/michaelstadtmiller" target="_blank">
-                            <img class="pure-img-responsive" src={% static 'img/icons/72/Linkedin.png' %}>
-                        </a>
-                    </li>
-                    <li class="pure-menu-item">
-                        <a href="https://twitter.com/MStadtmiller" target="_blank">
-                            <img class="pure-img-responsive" src={% static 'img/icons/72/Twitter-Icon.png' %}>
-                        </a>
-                    </li>
-                    <li class="pure-menu-item">
-                        <a href="https://plus.google.com/+MichaelStadtmiller" target="_blank">
-                            <img class="pure-img-responsive" src={% static 'img/icons/72/Google-plus-icon.png' %}>
-                        </a>
-                    </li>
-                </ul>
-            </div>
             {% endblock %}
         </div>
         <div class="content">
