@@ -78,7 +78,7 @@ def getProductDetail(myURL):
     classi = str(rows[9].find_all('a')[0].string)
     region = str(rows[9].find_all('a')[1].string)
     prodtype = str(rows[10].find_all('a')[0].string)
-    ABV = float(rows[10].find_all('a')[1].string)
+    ABV = '' #str(rows[10].find_all('a')[1].string)
     style1 = str(rows[11].find_all('a')[0].string)
     package = str(rows[11].find_all('a')[1].string)
     style2 = str(rows[12].find_all('a')[0].string)
@@ -130,25 +130,25 @@ def getProducts(myURL):
             # if ID in DB and name <> name then delete record then getProductDetail and getPriceQOH
             # if ID not in DB, add record getProductDetail and getPriceQOH
 
-        if (cols[5].string.strip() in ['low-stock', 'in-stock']) and \
-                (cols[2].string.strip() in ['750 ML', '1.0 L', '1.75 L']):
+        if (cols[5].string.strip() in ['low-stock', 'in-stock']): # and (cols[2].string.strip() in ['750 ML', '1.0 L', '1.75 L']):
             ext = cols[1].find('a').get('href')
             j = len(ext)-(ext.index("="))-1  # get id as string
             i = int(str([ext[-j:]][0]))      # convert id to int
+            print i
             # if i in DB
                 # if name = name then: update(getPriceQOH)
                 # else (name <> name) then: delete id; add both
                     # delete ID
-                    bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
-                    bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
+                    # bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
+                    # bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
             #else: add both
-                bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
-                bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
+                # bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
+                # bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
 
             # now post-process PPU, etc.
 
             #
-            bottle.extend([i])
+            #bottle.extend([i])
 
             #REMOVE ID CHECK
             if int(str([ext[-j:]][0])) not in (42831, 38456):
@@ -175,7 +175,7 @@ def getProducts(myURL):
                 bottle.extend([str(PPU), str(invstmt), str(dPrice), str(dPPU)])
 
                 # write to DB
-                writeDB(bottle)
+                # writeDB(bottle)
                 print bottle[1]  # debug
 
                 bottle = []  # clear list
