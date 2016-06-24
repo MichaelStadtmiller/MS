@@ -15,11 +15,11 @@ from bs4 import BeautifulSoup
 import requests
 import psycopg2
 import psycopg2.extras
-import unidecode
+#from partysource.models import Bottle
 
 def main():
-    search = raw_input('Enter a search term: ')
-    # search = 'Corner Creek'
+    # search = raw_input('Enter a search term: ')
+    search = 'Corner Creek'
     print "-------------" + search
     URL = 'https://www.thepartysource.com/express/results.php?o=0&t=&s='+search.replace(' ', '+')  # +'&sort=invQOH'
     getProducts(URL)
@@ -110,7 +110,6 @@ def getProductDetail(myURL):
 
 
 def getProducts(myURL):
-    bottle = []
     headers = {'Accept': 'text/css,*/*;q=0.1',
                'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
                'Accept-Encoding': 'gzip,deflate,sdch',
@@ -124,55 +123,35 @@ def getProducts(myURL):
         cols = row.find_all('td')  # whole column
         # TO DO:
 
-            # check if low-stock or in-stock; check if 750ml or bigger
-            # get ID
-            # if ID in DB and name = name then update getpriceQOH
-            # if ID in DB and name <> name then delete record then getProductDetail and getPriceQOH
-            # if ID not in DB, add record getProductDetail and getPriceQOH
+            # X check if low-stock or in-stock; check if 750ml or bigger
+            # X get ID
+            #   if ID in DB and name = name then update getpriceQOH
+            # X if ID in DB and name <> name then delete record then addBottle
+            # X if ID not in DB, add record getProductDetail and getPriceQOH
 
         # CLEANUP: Replace u'\xa0' with ' ' should be re-encoded instead.
+        # if in stock and a normal bottle size
         if cols[5].string.strip() in ['low-stock', 'in-stock'] and \
                         cols[2].string.strip().replace(u'\xa0', ' ') in ['750 ML', '1.0 L', '1.75 L']:
-            ext = cols[1].find('a').get('href')
-            j = len(ext)-(ext.index("="))-1  # find length of ID
-            i = int(str([ext[-j:]][0]))      # get/convert id to int
-            # if i in DB
-                # if name = name then: update(getPriceQOH)
-                # else (name <> name) then: delete id; add both
-                    # delete ID
-                    # bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
-                    # bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
-            #else: add both
-                # bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
-                # bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
+            ext = cols[1].find('a').get('href')     # get click through off bottle name
+            j = len(ext)-(ext.index("="))-1         # find length of ID
+            i = int(str([ext[-j:]][0]))             # get/convert id to int
+            existing_name = queryDB(i)              # get existing name from DB (false otherwise)
 
-            # now post-process PPU, etc.
-
-            # get ID
-            bottle.extend([i])
-            bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
-            bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
-            # get price per fifth
-            conv_size = bottle[13]
-            if bottle[14] == 'L':
-                conv_size *= 1000
-            PPU = round(bottle[18]*float(750.0/conv_size))
-            # get discount price and total investment required.
-            if bottle[20] > 12:
-                q = 12
-            else:
-                q = bottle[20]
-            invstmt = round(q*bottle[18]*0.9, 2)
-            dPrice = round(invstmt/q, 2)
-            dPPU = round(PPU*0.9, 2)
-
-            bottle.extend([str(PPU), str(invstmt), str(dPrice), str(dPPU)])
-
-            # write to DB
-            # writeDB(bottle)
-            print bottle[1]  # debug
-
-            bottle = []  # clear list
+            # if bottle exists in DB
+            if bool(existing_name):
+                # if same name: update P and Q
+                if cols[1].string.strip().replace(u'\xa0', ' ') == existing_name[0][0]:
+                    print "EXISTS; SAME NAME; UPDATE"
+                    updateDB(i)
+                # if not same name: delete existing and add new bottle
+                else:
+                    print "EXISTS; DIFF NAME; DELETE + ADD"
+                    deleteDB(i)
+                    addBottle(i, ext)
+            else:  # ID doesn't exist; add new item
+                print "DNE; ADD"
+                addBottle(i, ext)
 
     # More product - next page is coming back sorted and is duplicating
     #  from the first page and/or missing product completely
@@ -186,6 +165,34 @@ def getProducts(myURL):
         except:
             break
 
+
+def addBottle(i, ext):
+    bottle = []
+    bottle.extend([i])
+    bottle.extend(getProductDetail('https://www.thepartysource.com/express/'+ext))
+    bottle.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
+
+    # get price per fifth
+    conv_size = bottle[13]
+    if bottle[14] == 'L':
+        conv_size *= 1000
+    PPU = round(bottle[18]*float(750.0/conv_size))
+    # get discount price and total investment required.
+    if bottle[20] > 12:
+        q = 12
+    else:
+        q = bottle[20]
+    invstmt = round(q*bottle[18]*0.9, 2)
+    dPrice = round(invstmt/q, 2)
+    dPPU = round(PPU*0.9, 2)
+
+    bottle.extend([str(PPU), str(invstmt), str(dPrice), str(dPPU)])
+
+    # write to DB
+    writeDB(bottle)
+    print "-- addbottle --"
+    print bottle[1]
+    bottle = []
 
 def writeDB(mylist):
     try:
@@ -203,6 +210,70 @@ def writeDB(mylist):
     except ValueError:
         print "SQL INSERT error" + ValueError
     conn.commit()
+    conn.close()
+
+
+def queryDB(id):
+    try:
+        conn = psycopg2.connect("dbname='dbMS' user='dbams' host='localhost' password='pineappledb'")
+    except:
+        print "SQL DB connection failed"
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""SELECT name from partysource_bottle where "PSID" = {}""".format(id))
+        name = cur.fetchall()
+    except ValueError:
+        name = False
+        print "SQL SELECT error " + ValueError
+    conn.close()
+    return name
+
+
+def deleteDB(id):
+    try:
+        conn = psycopg2.connect("dbname='dbMS' user='dbams' host='localhost' password='pineappledb'")
+    except:
+        print "SQL DB connection failed"
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""DELETE from partysource_bottle where "PSID" = {}""".format(id))
+    except ValueError:
+        print "SQL DELETE error" + ValueError
+    conn.commit()
+    conn.close()
+
+
+def updateDB(i, ext):
+
+    update = []
+    update.extend(getPriceQOH('https://www.thepartysource.com/express/'+ext))
+#    price       18     0
+#    retail      19     1
+#    QOH         20     2
+#    PPU         21     3
+#    invstmt     22     4
+#    dPrice      23     5
+#    dPPU        24     6
+
+    # query DB to get SIZE and UOM
+
+    # get price per fifth
+    conv_size = size
+    if UOM == 'L':
+        conv_size *= 1000
+    PPU = round(update[0]*float(750.0/conv_size))
+    # get discount price and total investment required.
+    if update[2] > 12:
+        q = 12
+    else:
+        q = update[2]
+    invstmt = round(q*update[0]*0.9, 2)
+    dPrice = round(invstmt/q, 2)
+    dPPU = round(PPU*0.9, 2)
+
+    # update DB using new values
 
 if __name__ == '__main__':
     main()
