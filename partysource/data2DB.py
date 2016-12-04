@@ -1,15 +1,8 @@
-## Beautiful Soup
-    # http://www.crummy.com/software/BeautifulSoup/bs4/doc/#a-string
-    # http://stackoverflow.com/questions/23377533/python-beautifulsoup-parsing-table
-
 ## Auto populate DB
     # http://eli.thegreenplace.net/2014/02/15/programmatically-populating-a-django-database
 
-## PLAN:
 # Enter search terms and get resulting list back.
-    # e.g. https://www.thepartysource.com/express/results.php?i=COCONUT+RUM
-# Pass link to get details if availability is "low or in-stock"
-# On product page, get info and add to a list (next step - add to database)
+# e.g. https://www.thepartysource.com/express/results.php?i=COCONUT+RUM
 
 from bs4 import BeautifulSoup
 import requests
